@@ -36,7 +36,6 @@ public class Client extends JFrame implements Runnable {
     } catch (IOException ex) {
       ex.printStackTrace();
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -94,7 +93,6 @@ public class Client extends JFrame implements Runnable {
       Thread thread = new Thread(this);
       thread.start();
     } catch (IOException e1) {
-      // TODO Auto-generated catch block
       e1.printStackTrace();
       chat.append("connection failure\n");
     }
