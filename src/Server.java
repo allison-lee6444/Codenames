@@ -37,19 +37,21 @@ public class Server extends JFrame {
     public void run() {
       try {
         while (true) {
-          System.out.println("read game from client " + id + " " + gameId);
-          synchronized (game) {
-            if (game.getState() == Game.State.WAITING) {
-              PlayerList newStatus = (PlayerList) inputFromClient.readObject();
+          if (game.getState() == Game.State.WAITING) {
+            PlayerList newStatus = (PlayerList) inputFromClient.readObject();
+            synchronized (game) {
               game.setPlayerList(newStatus);
-              if (!newStatus.isJoining()){
+              if (!newStatus.isJoining()) {
                 game.start();
               }
-            } else {
-              ArrayList<Move> newStatus = (ArrayList<Move>) inputFromClient.readObject();
-              game.setMoves(newStatus);
+              game.notifyAll();
             }
-            game.notifyAll();
+          } else {
+            ArrayList<Move> newStatus = (ArrayList<Move>) inputFromClient.readObject();
+            synchronized (game) {
+              game.setMoves(newStatus);
+              game.notifyAll();
+            }
           }
           Thread.sleep(50);
         }
@@ -78,6 +80,7 @@ public class Server extends JFrame {
             outputToClient.writeObject(game.getPlayerList());
           else
             outputToClient.writeObject(game.getMoves());
+          outputToClient.flush();
         }
       } catch (IOException e) {
         e.printStackTrace();
@@ -131,13 +134,16 @@ public class Server extends JFrame {
             clientGameId = nextGameId;
             gameTable.put(nextGameId, new Game());
             outputStream.writeBoolean(true); // game id validity
+            outputStream.flush();
           } else {
             clientGameId = Integer.parseInt(clientGameIdString);
             boolean isValid = gameTable.containsKey(clientGameId) &&
                     gameTable.get(clientGameId).getPlayerList().isJoining();
             outputStream.writeBoolean(isValid);
+            outputStream.flush();
             if (!isValid) {
               log.append(String.format("Invalid game ID: %d\n", clientGameId));
+              socket.close();
               continue;
             }
 
@@ -146,10 +152,15 @@ public class Server extends JFrame {
           Game currentGame = gameTable.get(clientGameId);
           Player currentPlayer = new Player(clientUsername, nextUserId, clientGameId);
           synchronized (currentGame) {
+            System.out.println("going to send");
             currentGame.getPlayerList().addUnassigned(currentPlayer);
+            System.out.println("senfing game id");
             outputStream.writeInt(clientGameId);
+            outputStream.flush();
             outputStream.writeInt(nextUserId);
+            outputStream.flush();
             outputStream.writeObject(currentGame.getPlayerList());
+            outputStream.flush();
             currentGame.notifyAll();
           }
           ClientReader clientReader = new ClientReader(inputStream, nextUserId, clientGameId);

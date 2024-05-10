@@ -4,21 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e41666bd-786d-473c-8737-e31d5ddbf1ab" name="Changes" comment="gui finished">
+    <list default="true" id="e41666bd-786d-473c-8737-e31d5ddbf1ab" name="Changes" comment="6pm update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Guess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Guess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Hint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Hint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Move.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/PlayerList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/PlayerList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Play.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Play.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Start.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Start.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Start.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Start.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/WaitingRoom.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/WaitingRoom.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/WaitingRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/WaitingRoom.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,7 +122,7 @@
       <workItem from="1715274734927" duration="20406000" />
       <workItem from="1715323713258" duration="4450000" />
       <workItem from="1715357786268" duration="10306000" />
-      <workItem from="1715370845335" duration="7898000" />
+      <workItem from="1715370845335" duration="9801000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -159,7 +148,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715303538672</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="6pm update">
+      <option name="closed" value="true" />
+      <created>1715379010456</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1715379010456</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,40 +165,26 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="gui finished" />
-    <option name="LAST_COMMIT_MESSAGE" value="gui finished" />
+    <MESSAGE value="6pm update" />
+    <option name="LAST_COMMIT_MESSAGE" value="6pm update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>148</line>
+          <line>154</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>92</line>
+          <line>94</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ui/Client.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="24" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>137</line>
+          <line>140</line>
           <option name="timeStamp" value="29" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ui/Client.java</url>
-          <line>172</line>
-          <option name="timeStamp" value="31" />
         </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">
           <properties class="java.lang.ClassCastException" package="java.lang" />

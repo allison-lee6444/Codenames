@@ -41,7 +41,6 @@ public class Client extends JFrame implements Runnable {
             revalidate();
             repaint();
           }
-          System.out.println(newPlayerList.size());
           game.setPlayerList(newPlayerList);
           waitingRoom.setPlayerList(newPlayerList);
           waitingRoom.getStartGameButton().setEnabled(newPlayerList.isReady());
@@ -151,6 +150,7 @@ public class Client extends JFrame implements Runnable {
       try {
         synchronized (game) {
           ostream.writeObject(game.getPlayerList());
+          ostream.flush();
         }
       } catch (IOException e) {
         e.printStackTrace();
@@ -164,20 +164,19 @@ public class Client extends JFrame implements Runnable {
       socket = new Socket("localhost", 9898);
 
       ostream = new ObjectOutputStream(socket.getOutputStream());
-      istream = new ObjectInputStream(socket.getInputStream());
 
       ostream.writeUTF(username + "\n" + ((gameid == null) ? "\0" : gameid));
       ostream.flush();
 
-      System.out.println(222);
+      istream = new ObjectInputStream(socket.getInputStream());
       boolean isValid = istream.readBoolean();
-      System.out.println(isValid);
+
       if (!isValid) {
         JOptionPane.showMessageDialog(null, "Invalid game ID!");
         socket.close();
         return;
       }
-      System.out.println(1111);
+
       int gameId = istream.readInt();
       int userId = istream.readInt();
       PlayerList currentList = (PlayerList) istream.readObject();
