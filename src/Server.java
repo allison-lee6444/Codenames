@@ -107,7 +107,7 @@ public class Server extends JFrame {
           ClientReader clientReader = new ClientReader(socket, nextId);
           ClientWriter clientWriter = new ClientWriter(socket, nextId);
           log.append(String.format("Starting thread for client %d at %s\n", nextId, new Date()));
-          log.append(String.format("Client %d's host name is %s\n Client %d's IP Address is %s\n",
+          log.append(String.format("ui.Client %d's host name is %s\n ui.Client %d's IP Address is %s\n",
                   nextId, socket.getInetAddress().getHostName(), nextId, socket.getInetAddress()));
           ++nextId;
           new Thread(clientReader).start();

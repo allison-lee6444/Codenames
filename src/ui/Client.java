@@ -1,5 +1,5 @@
+package ui;
 
-import java.awt.BorderLayout;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,14 +8,14 @@ import java.util.Arrays;
 import javax.swing.*;
 
 
-
 public class Client extends JFrame implements Runnable {
   private Socket socket;
   private JTextArea chat;
   private JTextField input;
 
+
   public Client() {
-    super("Codenames Client");
+    super("Codenames ui.Client");
     initializeUI();
 
   }
@@ -41,16 +41,18 @@ public class Client extends JFrame implements Runnable {
   }
 
   private void initializeUI() {
-    setSize(400, 400);
+    setSize(800, 550);
 
     JMenuBar menuBar = new JMenuBar();
-    JMenu network = new JMenu("Network");
-    JMenuItem connect = new JMenuItem("Connect");
+    JMenu gameMenu = new JMenu("Game");
     JMenuItem exit = new JMenuItem("Exit");
+
 
     exit.addActionListener((e) -> {
       try {
-        socket.close();
+        if (socket != null) {
+          socket.close();
+        }
         System.exit(0);
       } catch (IOException ex) {
         System.out.println("Error on exit: ");
@@ -58,11 +60,8 @@ public class Client extends JFrame implements Runnable {
       }
     });
 
-    connect.addActionListener((e) -> connectServer("localhost", 9898));
-
-    network.add(connect);
-    network.add(exit);
-    menuBar.add(network);
+    gameMenu.add(exit);
+    menuBar.add(gameMenu);
     setJMenuBar(menuBar);
 
     chat = new JTextArea();
@@ -70,8 +69,6 @@ public class Client extends JFrame implements Runnable {
     input = new JTextField();
     input.addActionListener((e) -> sendMessage());
 
-    add(chat, BorderLayout.CENTER);
-    add(input, BorderLayout.SOUTH);
   }
 
   private void sendMessage() {
@@ -86,15 +83,13 @@ public class Client extends JFrame implements Runnable {
     }
   }
 
-  private void connectServer(String ip, int port) {
+  public void connectServer(String ip, int port) {
     try {
       socket = new Socket(ip, port);
-      chat.append("connected\n");
       Thread thread = new Thread(this);
       thread.start();
     } catch (IOException e1) {
       e1.printStackTrace();
-      chat.append("connection failure\n");
     }
   }
 
