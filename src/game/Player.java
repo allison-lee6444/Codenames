@@ -1,9 +1,10 @@
 package game;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Player {
+public class Player implements Serializable {
   public enum Team {RED, BLUE}
 
   ;
@@ -72,7 +73,7 @@ public class Player {
     if (this == o) return true;
     if (!(o instanceof Player)) return false;
     Player player = (Player) o;
-    return getUserId() == player.getUserId() && getGameId() == player.getGameId() && Objects.equals(getUsername(), player.getUsername()) && role == player.role && team == player.team;
+    return getUserId() == player.getUserId() && getGameId() == player.getGameId() && Objects.equals(getUsername(), player.getUsername());
   }
 
   @Override

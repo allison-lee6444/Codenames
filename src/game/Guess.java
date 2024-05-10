@@ -4,7 +4,7 @@ public class Guess extends Move{
   private int wordId;
 
   public Guess(Player player, int wordId) {
-    super(player, false);
+    super(player, MoveType.GUESS);
     this.wordId = wordId;
   }
 

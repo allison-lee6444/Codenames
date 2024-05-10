@@ -1,21 +1,25 @@
 package game;
 
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import game.Player.*;
 
-public class Game implements Serializable {
-  private final ArrayList<Move> moves = new ArrayList<>();
-  private final int id;
-  private final PlayerList playerList = new PlayerList();
+public class Game {
+  private ArrayList<Move> moves = new ArrayList<>();
+  private int id;
+  private PlayerList playerList = new PlayerList();
+  private static int nextId = 1;
 
-  public enum State {START, WAITING, PLAYING};
-  private State state = State.START;
+  public enum State {WAITING, PLAYING}
 
-  public Game(int id) {
+  ;
+  private State state = State.WAITING;
+
+  public Game() {
+    this.id = nextId++;
+  }
+
+  public Game(int id){
     this.id = id;
   }
 
@@ -23,11 +27,22 @@ public class Game implements Serializable {
     if (player.getGameId() != id) {
       return false;
     }
-    return playerList.setRole(player, team, role);
+    boolean succeeded = playerList.setRole(player, team, role);
+    if (!succeeded) { // restore role
+      if (player.isAssignedRole())
+        playerList.setRole(player, player.getTeam(), player.getRole());
+      else
+        playerList.addUnassigned(player);
+    }
+    return succeeded;
   }
 
   public int getId() {
     return id;
+  }
+
+  public void setId(int id) {
+    this.id= id;
   }
 
   public PlayerList getPlayerList() {
@@ -42,14 +57,23 @@ public class Game implements Serializable {
     return state;
   }
 
-  public void setState(State state) {
-    this.state = state;
+  public void setPlayerList(PlayerList pl){
+    playerList = pl;
+  }
+
+  public void setMoves(ArrayList<Move> moves){
+    this.moves = moves;
+  }
+
+  public void start(){
+    state = State.PLAYING;
+    playerList.endJoining();
   }
 
   public static void main(String[] args) {
     Player player1 = new Player("1", 1, 1);
     Player player2 = new Player("2", 2, 1);
-    Game game = new Game(1);
+    Game game = new Game();
     PlayerList playerList = game.getPlayerList();
 
     // test uniqueness of spymaster

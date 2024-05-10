@@ -16,31 +16,25 @@ public class Start {
   private JLabel gameidLabel;
   private JPanel startPanel;
 
-  public Start() {
-    joinExistingGameButton.addActionListener((e) -> {
-      if (username.getText().equals("") || gameid.getText().equals("")) {
-        JOptionPane.showMessageDialog(null, "You must fill out the username and game ID to join a game.");
-        return;
-      }
-      if (username.getText().length() > 20) {
-        JOptionPane.showMessageDialog(null, "Please make sure your username is shorter than 20 characters.");
-        return;
-      }
-    });
-
-    newGameButton.addActionListener((e) -> {
-      if (username.getText().equals("")) {
-        JOptionPane.showMessageDialog(null, "You must fill out the username to start a new game.");
-      }
-      if (username.getText().length() > 20) {
-        JOptionPane.showMessageDialog(null, "Please make sure your username is shorter than 20 characters.");
-        return;
-      }
-    });
-  }
 
   public JPanel getPanel() {
     return startPanel;
+  }
+
+  public JButton getNewGameButton() {
+    return newGameButton;
+  }
+
+  public JButton getJoinExistingGameButton() {
+    return joinExistingGameButton;
+  }
+
+  public JTextField getUsername() {
+    return username;
+  }
+
+  public JTextField getGameid() {
+    return gameid;
   }
 
   {
@@ -59,35 +53,71 @@ public class Start {
    */
   private void $$$setupUI$$$() {
     startPanel = new JPanel();
-    startPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(8, 2, new Insets(0, 0, 0, 0), -1, -1));
-    final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
-    startPanel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 4, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+    startPanel.setLayout(new GridBagLayout());
     title = new JLabel();
     Font titleFont = this.$$$getFont$$$(null, -1, 84, title.getFont());
     if (titleFont != null) title.setFont(titleFont);
     title.setText("Codenames");
-    startPanel.add(title, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    GridBagConstraints gbc;
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    startPanel.add(title, gbc);
     usernameLabel = new JLabel();
     usernameLabel.setHorizontalAlignment(0);
     usernameLabel.setText("Username");
-    startPanel.add(usernameLabel, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 2;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    startPanel.add(usernameLabel, gbc);
     username = new JTextField();
+    username.setColumns(20);
     username.setVerifyInputWhenFocusTarget(true);
     username.setVisible(true);
-    startPanel.add(username, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 3;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    startPanel.add(username, gbc);
     gameidLabel = new JLabel();
     gameidLabel.setText("Input Game ID if you are joining another game");
-    startPanel.add(gameidLabel, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 4;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    startPanel.add(gameidLabel, gbc);
     gameid = new JTextField();
-    startPanel.add(gameid, new com.intellij.uiDesigner.core.GridConstraints(5, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+    gameid.setColumns(20);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 5;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    startPanel.add(gameid, gbc);
     joinExistingGameButton = new JButton();
     joinExistingGameButton.setText("Join Existing Game");
-    startPanel.add(joinExistingGameButton, new com.intellij.uiDesigner.core.GridConstraints(6, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 6;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    startPanel.add(joinExistingGameButton, gbc);
     newGameButton = new JButton();
     newGameButton.setText("New Game");
-    startPanel.add(newGameButton, new com.intellij.uiDesigner.core.GridConstraints(7, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
-    startPanel.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 7;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    startPanel.add(newGameButton, gbc);
   }
 
   /**

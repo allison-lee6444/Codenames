@@ -1,19 +1,32 @@
 package game;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
-public class PlayerList {
+public class PlayerList implements Serializable {
   private Player redSpymaster;
   private Player blueSpymaster;
   private final ArrayList<Player> redDetectives = new ArrayList<>();
   private final ArrayList<Player> blueDetectives = new ArrayList<>();
+  private final ArrayList<Player> unassigned = new ArrayList<>();
+  private boolean joining = true;
 
   public boolean isReady() {
-    return redSpymaster != null && blueSpymaster != null &&
+    return redSpymaster != null && blueSpymaster != null && unassigned.isEmpty() &&
             !redDetectives.isEmpty() && !blueDetectives.isEmpty();
   }
 
-  public boolean setRole(Player player, Player.Team team, Player.Role role) {
+
+  public boolean isJoining() {
+    return joining;
+  }
+
+  public synchronized boolean setRole(Player player, Player.Team team, Player.Role role) {
+    if (!joining) {
+      return false;
+    }
     // unassign player first
     if (player.isAssignedRole()) {
       if (player.getTeam() == Player.Team.RED) {
@@ -29,6 +42,8 @@ public class PlayerList {
           blueDetectives.remove(player);
         }
       }
+    } else {
+      unassigned.remove(player);
     }
     // assign role
     if (team == Player.Team.RED) {
@@ -66,5 +81,48 @@ public class PlayerList {
 
   public ArrayList<Player> getBlueDetectives() {
     return blueDetectives;
+  }
+
+  public ArrayList<Player> getUnassigned() {
+    return unassigned;
+  }
+
+  public void addUnassigned(Player player) {
+    unassigned.add(player);
+  }
+
+  public int size() {
+    return redDetectives.size() + blueDetectives.size() + unassigned.size()
+            + (redSpymaster != null ? 1 : 0) + (blueSpymaster != null ? 1 : 0);
+  }
+
+  public void endJoining() {
+    joining = false;
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+    out.defaultWriteObject();
+    out.writeInt(redDetectives.size());
+    for (Player player : redDetectives) {
+      out.writeObject(player);
+    }
+    out.writeInt(blueDetectives.size());
+    for (Player player : blueDetectives) {
+      out.writeObject(player);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+    in.defaultReadObject();
+    redDetectives.clear();
+    int count = in.readInt();
+    for (int i = 0; i < count; i++) {
+      redDetectives.add((Player) in.readObject());
+    }
+    blueDetectives.clear();
+    count = in.readInt();
+    for (int i = 0; i < count; i++) {
+      blueDetectives.add((Player) in.readObject());
+    }
   }
 }

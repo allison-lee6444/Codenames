@@ -5,7 +5,7 @@ public class Hint extends Move{
   private int number;
 
   public Hint(Player player, String word, int number) {
-    super(player, true);
+    super(player, MoveType.HINT);
     this.word = word;
     this.number = number;
   }

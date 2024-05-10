@@ -1,27 +1,22 @@
 package game;
 
-public abstract class Move {
-  private final Player player;
-  private final boolean isHint; // true if hint, false if guess
+import java.io.Serializable;
 
-  public Move(Player player, boolean isHint) {
+public class Move implements Serializable {
+  private final Player player;
+  public enum MoveType {HINT, GUESS}
+  private final MoveType moveType;
+
+  public Move(Player player, MoveType moveType) {
     this.player = player;
-    this.isHint = isHint;
+    this.moveType = moveType;
   }
 
   public Player getPlayer() {
     return player;
   }
 
-  public boolean isHint() {
-    return isHint;
-  }
-
-  @Override
-  public String toString() {
-    return "Move{" +
-            "player=" + player +
-            ", isHint=" + isHint +
-            '}';
+  public MoveType getMoveType() {
+    return moveType;
   }
 }

@@ -1,13 +1,15 @@
 import java.awt.BorderLayout;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
-import javafx.util.Pair;
+import game.Game;
+import game.Move;
+import game.Player;
+import game.PlayerList;
 
 import javax.swing.*;
 
@@ -15,31 +17,43 @@ import javax.swing.*;
 public class Server extends JFrame {
   private JTextArea log;
   private ServerSocket serverSocket;
-  private static int nextId = 1;
-  private final ArrayList<Pair<Integer, String>> messages = new ArrayList<>();
+  private static int nextUserId = 1;
+  private static int nextGameId = 1;
+  private final HashMap<Integer, Game> gameTable = new HashMap<>();
 
   private class ClientReader implements Runnable { // producer
-    private final Socket socket;
     private final int id;
+    private final int gameId;
+    private final Game game;
+    private final ObjectInputStream inputFromClient;
 
-    public ClientReader(Socket socket, int id) {
-      this.socket = socket;
+    public ClientReader(ObjectInputStream inputFromClient, int id, int gameId) {
+      this.inputFromClient = inputFromClient;
       this.id = id;
+      this.gameId = gameId;
+      this.game = gameTable.get(gameId);
     }
 
     public void run() {
       try {
         while (true) {
-          DataInputStream inputFromClient = new DataInputStream(
-                  socket.getInputStream());
-          String message = inputFromClient.readUTF();
-          synchronized (messages) {
-            messages.add(new Pair<>(id, message));
-            messages.notifyAll();
+          System.out.println("read game from client " + id + " " + gameId);
+          synchronized (game) {
+            if (game.getState() == Game.State.WAITING) {
+              PlayerList newStatus = (PlayerList) inputFromClient.readObject();
+              game.setPlayerList(newStatus);
+              if (!newStatus.isJoining()){
+                game.start();
+              }
+            } else {
+              ArrayList<Move> newStatus = (ArrayList<Move>) inputFromClient.readObject();
+              game.setMoves(newStatus);
+            }
+            game.notifyAll();
           }
           Thread.sleep(50);
         }
-      } catch (IOException | InterruptedException e) {
+      } catch (IOException | InterruptedException | ClassNotFoundException e) {
         e.printStackTrace();
       }
 
@@ -47,21 +61,23 @@ public class Server extends JFrame {
   }
 
   private class ClientWriter implements Runnable { // consumer
-    private final Socket socket;
     private final int id;
-    private int nextMessageId;
+    private final int gameId;
+    private final Game game;
+    private final ObjectOutputStream outputToClient;
 
-    public ClientWriter(Socket socket, int id) {
-      this.socket = socket;
+    public ClientWriter(ObjectOutputStream outputToClient, int id, int gameId) {
+      this.outputToClient = outputToClient;
       this.id = id;
+      this.gameId = gameId;
+      this.game = gameTable.get(gameId);
+
       try {
-        synchronized (messages) { // load all previous messages prior to connection
-          DataOutputStream outputToClient = new DataOutputStream(socket.getOutputStream());
-          for (Pair<Integer, String> message : messages) {
-            String pkt = String.format("%d %s", message.getKey(), message.getValue());
-            outputToClient.writeUTF(pkt);
-          }
-          nextMessageId = messages.size();
+        synchronized (game) {
+          if (game.getMoves().isEmpty())
+            outputToClient.writeObject(game.getPlayerList());
+          else
+            outputToClient.writeObject(game.getMoves());
         }
       } catch (IOException e) {
         e.printStackTrace();
@@ -71,19 +87,16 @@ public class Server extends JFrame {
 
     public void run() {
       try {
-        DataOutputStream outputToClient = new DataOutputStream(socket.getOutputStream());
         while (true) {
-          synchronized (messages) {
-            messages.wait();
-            for (int i = nextMessageId; i < messages.size(); i++) {
-              Pair<Integer, String> message = messages.get(i);
-              if (message.getKey() == id) {
-                continue;
-              }
-              outputToClient.writeUTF(
-                      String.format("%d %s", message.getKey(), message.getValue()));
+          synchronized (game) {
+            game.wait();
+            System.out.println("Send update to client " + id + " " + gameId);
+            if (game.getMoves().isEmpty()) {
+              outputToClient.writeObject(game.getPlayerList());
+            } else {
+              outputToClient.writeObject(game.getMoves());
             }
-            nextMessageId = messages.size();
+            outputToClient.flush();
           }
         }
       } catch (InterruptedException | IOException e) {
@@ -103,13 +116,46 @@ public class Server extends JFrame {
         log.append(String.format("Codenames server started at %s\n", new Date()));
         while (true) {
           Socket socket = serverSocket.accept();
+          ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+          ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
-          ClientReader clientReader = new ClientReader(socket, nextId);
-          ClientWriter clientWriter = new ClientWriter(socket, nextId);
-          log.append(String.format("Starting thread for client %d at %s\n", nextId, new Date()));
-          log.append(String.format("ui.Client %d's host name is %s\n ui.Client %d's IP Address is %s\n",
-                  nextId, socket.getInetAddress().getHostName(), nextId, socket.getInetAddress()));
-          ++nextId;
+          String clientArgs = inputStream.readUTF();
+          String clientUsername = clientArgs.split("\n")[0];
+          String clientGameIdString = clientArgs.split("\n")[1];
+          int clientGameId;
+          log.append(String.format("Starting thread for client %d at %s\n", nextUserId, new Date()));
+          log.append(String.format("Client %d's host name is %s\n Client %d's IP Address is %s\n",
+                  nextUserId, socket.getInetAddress().getHostName(), nextUserId, socket.getInetAddress()));
+          if (clientGameIdString.equals("\0")) {
+            log.append(String.format("New game: %d\n", nextGameId));
+            clientGameId = nextGameId;
+            gameTable.put(nextGameId, new Game());
+            outputStream.writeBoolean(true); // game id validity
+          } else {
+            clientGameId = Integer.parseInt(clientGameIdString);
+            boolean isValid = gameTable.containsKey(clientGameId) &&
+                    gameTable.get(clientGameId).getPlayerList().isJoining();
+            outputStream.writeBoolean(isValid);
+            if (!isValid) {
+              log.append(String.format("Invalid game ID: %d\n", clientGameId));
+              continue;
+            }
+
+            log.append(String.format("Joining Game: %d\n", clientGameId));
+          }
+          Game currentGame = gameTable.get(clientGameId);
+          Player currentPlayer = new Player(clientUsername, nextUserId, clientGameId);
+          synchronized (currentGame) {
+            currentGame.getPlayerList().addUnassigned(currentPlayer);
+            outputStream.writeInt(clientGameId);
+            outputStream.writeInt(nextUserId);
+            outputStream.writeObject(currentGame.getPlayerList());
+            currentGame.notifyAll();
+          }
+          ClientReader clientReader = new ClientReader(inputStream, nextUserId, clientGameId);
+          ClientWriter clientWriter = new ClientWriter(outputStream, nextUserId, clientGameId);
+          ++nextUserId;
+          ++nextGameId;
           new Thread(clientReader).start();
           new Thread(clientWriter).start();
         }

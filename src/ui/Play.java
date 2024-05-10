@@ -60,7 +60,6 @@ public class Play {
     PlayPanel.setLayout(new GridBagLayout());
     PlayPanel.setMinimumSize(new Dimension(800, 450));
     button1 = new JButton();
-    button1.setForeground(new Color(-822419));
     button1.setMaximumSize(new Dimension(150, 80));
     button1.setMinimumSize(new Dimension(150, 60));
     button1.setPreferredSize(new Dimension(150, 60));
