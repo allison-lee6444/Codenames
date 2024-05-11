@@ -1,10 +1,16 @@
 package ui;
 
+import game.Board;
+import game.Player;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class Play {
   private JPanel PlayPanel;
@@ -33,12 +39,100 @@ public class Play {
   private JButton button23;
   private JButton button24;
   private JButton button25;
-  private JTextField textField1;
-  private JTextField textField2;
+  private JTextField hintField;
+  private JTextField numField;
   private JButton submitButton;
+  private JLabel redRemain;
+  private JLabel blueRemain;
+  private JLabel hintLabel;
+  private JLabel numLabel;
+  private JLabel turnLabel;
+  private JLabel hint;
+  private JButton[] buttons;
+  private boolean isDetective;
+  private final HashMap<Board.WordType, Color> colorMap;
+
+  public Play() {
+    colorMap = new HashMap<>();
+    colorMap.put(Board.WordType.RED, new Color(243, 115, 109));
+    colorMap.put(Board.WordType.BLUE, new Color(103, 128, 193));
+    colorMap.put(Board.WordType.ASSASSIN, new Color(43, 45, 48));
+    colorMap.put(Board.WordType.BYSTANDER, new Color(122, 118, 54));
+  }
 
   public JPanel getPlayPanel() {
     return PlayPanel;
+  }
+
+  public void setBoard(Player player, Board board) {
+    if (buttons == null) {
+      buttons = new JButton[]{
+              button1, button2, button3, button4, button5, button6, button7, button8, button9, button10,
+              button11, button12, button13, button14, button15, button16, button17, button18, button19, button20,
+              button21, button22, button23, button24, button25
+      };
+    }
+    assert player != null;
+    assert board != null;
+    String[] words = board.getWords();
+    Board.WordType[] wordType = board.getWordTypes();
+
+    if (player.getRole() == Player.Role.DETECTIVE) {
+      hintField.setVisible(false);
+      numField.setVisible(false);
+      submitButton.setVisible(false);
+      hintLabel.setVisible(false);
+      numLabel.setVisible(false);
+      isDetective = true;
+    } else {
+      isDetective = false;
+      for (int i = 0; i < 25; i++) {
+        buttons[i].setContentAreaFilled(false);
+      }
+    }
+
+    for (int i = 0; i < 25; i++) {
+      buttons[i].setText(words[i]);
+      if (!isDetective) { // see the board if you are a spymaster
+        buttons[i].setForeground(colorMap.get(wordType[i]));
+      }
+    }
+  }
+
+  public JButton[] getButtons() {
+    return buttons;
+  }
+
+  public JLabel getHint() {
+    return hint;
+  }
+
+  public JButton getSubmitButton() {
+    return submitButton;
+  }
+
+  public JTextField getHintField() {
+    return hintField;
+  }
+
+  public JTextField getNumField() {
+    return numField;
+  }
+
+  public JLabel getBlueRemain() {
+    return blueRemain;
+  }
+
+  public JLabel getRedRemain() {
+    return redRemain;
+  }
+
+  public JLabel getTurnLabel() {
+    return turnLabel;
+  }
+
+  public HashMap<Board.WordType, Color> getColorMap() {
+    return colorMap;
   }
 
   {
@@ -317,29 +411,29 @@ public class Play {
     gbc.gridy = 5;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     PlayPanel.add(button25, gbc);
-    final JLabel label1 = new JLabel();
-    Font label1Font = this.$$$getFont$$$(null, -1, 24, label1.getFont());
-    if (label1Font != null) label1.setFont(label1Font);
-    label1.setForeground(new Color(-822419));
-    label1.setText("Red: 9");
+    redRemain = new JLabel();
+    Font redRemainFont = this.$$$getFont$$$(null, -1, 24, redRemain.getFont());
+    if (redRemainFont != null) redRemain.setFont(redRemainFont);
+    redRemain.setForeground(new Color(-822419));
+    redRemain.setText("Red: 9");
     gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(0, 0, 30, 0);
-    PlayPanel.add(label1, gbc);
-    final JLabel label2 = new JLabel();
-    Font label2Font = this.$$$getFont$$$(null, -1, 24, label2.getFont());
-    if (label2Font != null) label2.setFont(label2Font);
-    label2.setForeground(new Color(-9994047));
-    label2.setText("Blue: 8");
+    PlayPanel.add(redRemain, gbc);
+    blueRemain = new JLabel();
+    Font blueRemainFont = this.$$$getFont$$$(null, -1, 24, blueRemain.getFont());
+    if (blueRemainFont != null) blueRemain.setFont(blueRemainFont);
+    blueRemain.setForeground(new Color(-9994047));
+    blueRemain.setText("Blue: 8");
     gbc = new GridBagConstraints();
     gbc.gridx = 5;
     gbc.gridy = 0;
     gbc.anchor = GridBagConstraints.EAST;
     gbc.insets = new Insets(0, 0, 30, 0);
-    PlayPanel.add(label2, gbc);
-    textField1 = new JTextField();
+    PlayPanel.add(blueRemain, gbc);
+    hintField = new JTextField();
     gbc = new GridBagConstraints();
     gbc.gridx = 1;
     gbc.gridy = 6;
@@ -347,23 +441,23 @@ public class Play {
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(30, 0, 0, 0);
-    PlayPanel.add(textField1, gbc);
-    final JLabel label3 = new JLabel();
-    label3.setText("# words:");
+    PlayPanel.add(hintField, gbc);
+    numLabel = new JLabel();
+    numLabel.setText("# words:");
     gbc = new GridBagConstraints();
     gbc.gridx = 4;
     gbc.gridy = 6;
     gbc.anchor = GridBagConstraints.EAST;
     gbc.insets = new Insets(30, 20, 0, 10);
-    PlayPanel.add(label3, gbc);
-    textField2 = new JTextField();
+    PlayPanel.add(numLabel, gbc);
+    numField = new JTextField();
     gbc = new GridBagConstraints();
     gbc.gridx = 5;
     gbc.gridy = 6;
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(30, 0, 0, 0);
-    PlayPanel.add(textField2, gbc);
+    PlayPanel.add(numField, gbc);
     submitButton = new JButton();
     submitButton.setText("Submit");
     gbc = new GridBagConstraints();
@@ -373,14 +467,34 @@ public class Play {
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 0, 0, 0);
     PlayPanel.add(submitButton, gbc);
-    final JLabel label4 = new JLabel();
-    label4.setText("Give Hint:");
+    hintLabel = new JLabel();
+    hintLabel.setText("Give Hint:");
     gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 6;
     gbc.anchor = GridBagConstraints.EAST;
     gbc.insets = new Insets(30, 0, 0, 10);
-    PlayPanel.add(label4, gbc);
+    PlayPanel.add(hintLabel, gbc);
+    turnLabel = new JLabel();
+    Font turnLabelFont = this.$$$getFont$$$(null, -1, 12, turnLabel.getFont());
+    if (turnLabelFont != null) turnLabel.setFont(turnLabelFont);
+    turnLabel.setForeground(new Color(-822419));
+    turnLabel.setText("Red spymaster is giving hints");
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    PlayPanel.add(turnLabel, gbc);
+    hint = new JLabel();
+    Font hintFont = this.$$$getFont$$$(null, -1, 20, hint.getFont());
+    if (hintFont != null) hint.setFont(hintFont);
+    hint.setText("Current hint: waiting...");
+    gbc = new GridBagConstraints();
+    gbc.gridx = 2;
+    gbc.gridy = 0;
+    gbc.gridwidth = 3;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(0, 15, 0, 0);
+    PlayPanel.add(hint, gbc);
   }
 
   /**

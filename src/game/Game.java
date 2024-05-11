@@ -9,6 +9,7 @@ public class Game {
   private int id;
   private PlayerList playerList = new PlayerList();
   private static int nextId = 1;
+  private Board board;
 
   public enum State {WAITING, PLAYING}
 
@@ -19,7 +20,7 @@ public class Game {
     this.id = nextId++;
   }
 
-  public Game(int id){
+  public Game(int id) {
     this.id = id;
   }
 
@@ -42,7 +43,7 @@ public class Game {
   }
 
   public void setId(int id) {
-    this.id= id;
+    this.id = id;
   }
 
   public PlayerList getPlayerList() {
@@ -57,17 +58,72 @@ public class Game {
     return state;
   }
 
-  public void setPlayerList(PlayerList pl){
+  public void setPlayerList(PlayerList pl) {
     playerList = pl;
   }
 
-  public void setMoves(ArrayList<Move> moves){
+  public void setMoves(ArrayList<Move> moves) {
     this.moves = moves;
   }
 
-  public void start(){
+  public void addMove(Move move) {
+    moves.add(move);
+  }
+
+  public void start() {
     state = State.PLAYING;
     playerList.endJoining();
+    board = new Board();
+  }
+
+  public Board getBoard() {
+    return board;
+  }
+
+  public void setBoard(Board board) {
+    this.board = board;
+  }
+
+  public enum Phase {RedHint, RedGuess, BlueHint, BlueGuess, RedWin, BlueWin}
+
+  public Phase getPhase() {
+    if (moves.isEmpty()) {
+      return Phase.RedHint;
+    }
+    Move lastMove = moves.get(moves.size() - 1);
+    if (lastMove.getPlayer().getRole() == Role.SPYMASTER) {
+      if (lastMove.getPlayer().getTeam() == Team.RED) {
+        return Phase.RedGuess;
+      } else {
+        return Phase.BlueGuess;
+      }
+    } else {
+      Guess lastGuess = (Guess) lastMove;
+      Board.WordType lastGuessType = board.getWordTypes()[lastGuess.getWordId()];
+      Team playerTeam = lastGuess.getPlayer().getTeam();
+      if (lastGuessType == Board.WordType.ASSASSIN) { // automatically ended
+        if (playerTeam == Team.RED) {
+          return Phase.BlueWin;
+        } else {
+          return Phase.RedWin;
+        }
+      }
+      boolean correctGuess = (lastGuessType == Board.WordType.RED && playerTeam == Team.RED) ||
+              (lastGuessType == Board.WordType.BLUE && playerTeam == Team.BLUE);
+      if (correctGuess) {
+        if (playerTeam == Team.RED) {
+          return Phase.RedGuess;
+        } else {
+          return Phase.BlueGuess;
+        }
+      } else {
+        if (playerTeam == Team.RED) {
+          return Phase.BlueHint;
+        } else {
+          return Phase.RedHint;
+        }
+      }
+    }
   }
 
   public static void main(String[] args) {

@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import game.Game;
 import game.Move;
@@ -37,8 +39,9 @@ public class Server extends JFrame {
     public void run() {
       try {
         while (true) {
+          Object input = inputFromClient.readObject();
           if (game.getState() == Game.State.WAITING) {
-            PlayerList newStatus = (PlayerList) inputFromClient.readObject();
+            PlayerList newStatus = (PlayerList) input;
             synchronized (game) {
               game.setPlayerList(newStatus);
               if (!newStatus.isJoining()) {
@@ -47,7 +50,7 @@ public class Server extends JFrame {
               game.notifyAll();
             }
           } else {
-            ArrayList<Move> newStatus = (ArrayList<Move>) inputFromClient.readObject();
+            ArrayList<Move> newStatus = (ArrayList<Move>) input;
             synchronized (game) {
               game.setMoves(newStatus);
               game.notifyAll();
@@ -73,19 +76,6 @@ public class Server extends JFrame {
       this.id = id;
       this.gameId = gameId;
       this.game = gameTable.get(gameId);
-
-      try {
-        synchronized (game) {
-          if (game.getMoves().isEmpty())
-            outputToClient.writeObject(game.getPlayerList());
-          else
-            outputToClient.writeObject(game.getMoves());
-          outputToClient.flush();
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-        log.append("connection failure with client " + id + "\n");
-      }
     }
 
     public void run() {
@@ -93,12 +83,15 @@ public class Server extends JFrame {
         while (true) {
           synchronized (game) {
             game.wait();
-            System.out.println("Send update to client " + id + " " + gameId);
             if (game.getMoves().isEmpty()) {
               outputToClient.writeObject(game.getPlayerList());
-            } else {
-              outputToClient.writeObject(game.getMoves());
+              outputToClient.flush();
+              if (!game.getPlayerList().isJoining()){ // just started the game
+                outputToClient.writeObject(game.getBoard());
+              }
             }
+            else
+              outputToClient.writeObject(game.getMoves());
             outputToClient.flush();
           }
         }
@@ -152,9 +145,7 @@ public class Server extends JFrame {
           Game currentGame = gameTable.get(clientGameId);
           Player currentPlayer = new Player(clientUsername, nextUserId, clientGameId);
           synchronized (currentGame) {
-            System.out.println("going to send");
             currentGame.getPlayerList().addUnassigned(currentPlayer);
-            System.out.println("senfing game id");
             outputStream.writeInt(clientGameId);
             outputStream.flush();
             outputStream.writeInt(nextUserId);

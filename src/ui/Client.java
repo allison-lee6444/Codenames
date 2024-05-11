@@ -8,6 +8,9 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.swing.*;
 
 
@@ -34,19 +37,25 @@ public class Client extends JFrame implements Runnable {
       while (true) {
         if (game.getState() == Game.State.WAITING) {
           PlayerList newPlayerList = (PlayerList) istream.readObject();
-          if (!newPlayerList.isJoining()) {
+          if (!newPlayerList.isJoining()) { // switching to playing
+            Board board = (Board) istream.readObject();
             remove(waitingRoom.getWaitingRoomPanel());
             add(play.getPlayPanel(), BorderLayout.CENTER);
             game.start();
+            game.setBoard(board);
+            play.setBoard(me, board);
+            new PlayInteractions();
             revalidate();
             repaint();
           }
           game.setPlayerList(newPlayerList);
           waitingRoom.setPlayerList(newPlayerList);
-          waitingRoom.getStartGameButton().setEnabled(newPlayerList.isReady());
+//          waitingRoom.getStartGameButton().setEnabled(newPlayerList.isReady());
+          waitingRoom.getStartGameButton().setEnabled(true);
         } else {
           ArrayList<Move> moves = (ArrayList<Move>) istream.readObject();
           game.setMoves(moves);
+          applyMoves(moves);
         }
         Thread.sleep(100);
       }
@@ -159,6 +168,69 @@ public class Client extends JFrame implements Runnable {
     }
   }
 
+  private class PlayInteractions {
+    private JButton[] buttons = play.getButtons();
+    private JButton submitButton = play.getSubmitButton();
+    private JTextField hintField = play.getHintField();
+    private JTextField numField = play.getNumField();
+
+    public PlayInteractions() {
+      for (int i = 0; i < buttons.length; i++) {
+        int finalI = i;
+        buttons[i].addActionListener((e) -> {
+          if (me.getRole() == Player.Role.SPYMASTER) {
+            return;
+          }
+          if (me.getTeam() == Player.Team.RED && game.getPhase() != Game.Phase.RedGuess) {
+            return;
+          }
+          if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueGuess) {
+            return;
+          }
+          game.addMove(new Guess(me, finalI));
+          writeToServer();
+        });
+      }
+      submitButton.addActionListener((e) -> {
+        if (me.getRole() != Player.Role.SPYMASTER) {
+          return;
+        }
+        if (me.getTeam() == Player.Team.RED && game.getPhase() != Game.Phase.RedHint) {
+          return;
+        }
+        if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueHint) {
+          return;
+        }
+        if (hintField.getText().contains(" ")) {
+          JOptionPane.showMessageDialog(null, "Hint needs to be in one word");
+          return;
+        }
+        try {
+          Integer.parseInt(numField.getText());
+        } catch (NumberFormatException ex) {
+          JOptionPane.showMessageDialog(null, "Please make sure your number is an integer.");
+          return;
+        }
+        game.addMove(new Hint(me, hintField.getText(), Integer.parseInt(numField.getText())));
+        writeToServer();
+        hintField.setText("");
+        numField.setText("");
+      });
+
+    }
+
+    public void writeToServer() {
+      try {
+        synchronized (game) {
+          ostream.writeObject(game.getMoves());
+          ostream.flush();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
   public void connectServer(String username, String gameid) {
     try {
       socket = new Socket("localhost", 9898);
@@ -205,11 +277,76 @@ public class Client extends JFrame implements Runnable {
     }
   }
 
-  private void applyMove(Move move) {
-    Game.State state = game.getState();
-    if (state == Game.State.WAITING) {
-      return;
+  // show current state to ui by going thru moves
+  private void applyMoves(ArrayList<Move> moves) {
+    String lastHint = "Waiting...";
+    JLabel hint = play.getHint();
+    JLabel redRemain = play.getRedRemain();
+    JLabel blueRemain = play.getBlueRemain();
+    JLabel turnLabel = play.getTurnLabel();
+    JButton[] buttons = play.getButtons();
+    HashMap<Board.WordType, Color> colorMap = play.getColorMap();
+    int redRemainCount = 9;
+    int blueRemainCount = 8;
+
+    for (Move move : moves) {
+      if (move.getMoveType() == Move.MoveType.HINT) {
+        lastHint = String.format("%s/%d", ((Hint) move).getWord(), ((Hint) move).getNumber());
+      } else {
+        int wordGuessed = ((Guess) move).getWordId();
+        Board.WordType wordGuessedType = game.getBoard().getWordTypes()[wordGuessed];
+        buttons[wordGuessed].setBackground(colorMap.get(wordGuessedType));
+        if (wordGuessedType == Board.WordType.RED) {
+          redRemainCount--;
+        } else if (wordGuessedType == Board.WordType.BLUE) {
+          blueRemainCount--;
+        }
+
+      }
     }
+    if (moves.get(moves.size() - 1).getMoveType() == Move.MoveType.GUESS &&
+            (game.getPhase() == Game.Phase.RedHint || game.getPhase() == Game.Phase.BlueHint)) {
+      lastHint = "Waiting...";
+    }
+    hint.setText("Hint: " + lastHint);
+    redRemain.setText("Red: " + redRemainCount);
+    blueRemain.setText("Blue: " + blueRemainCount);
+    Game.Phase currentPhase = game.getPhase();
+    if (redRemainCount == 0) {
+      currentPhase = Game.Phase.RedWin;
+    } else if (blueRemainCount == 0) {
+      currentPhase = Game.Phase.BlueWin;
+    }
+    switch (currentPhase) {
+      case RedHint:
+        turnLabel.setText("Red Spymaster is giving hints");
+        turnLabel.setForeground(colorMap.get(Board.WordType.RED));
+        break;
+      case BlueHint:
+        turnLabel.setText("Blue Spymaster is giving hints");
+        turnLabel.setForeground(colorMap.get(Board.WordType.BLUE));
+        break;
+      case RedGuess:
+        turnLabel.setText("Red Detectives are guessing");
+        turnLabel.setForeground(colorMap.get(Board.WordType.RED));
+        break;
+      case BlueGuess:
+        turnLabel.setText("Blue Detectives are guessing");
+        turnLabel.setForeground(colorMap.get(Board.WordType.BLUE));
+        break;
+      case RedWin:
+        turnLabel.setText("Red Win");
+        turnLabel.setForeground(colorMap.get(Board.WordType.RED));
+        JOptionPane.showMessageDialog(null, "Red Win");
+        break;
+      case BlueWin:
+        turnLabel.setText("Blue Win");
+        turnLabel.setForeground(colorMap.get(Board.WordType.BLUE));
+        JOptionPane.showMessageDialog(null, "Blue Win");
+        break;
+    }
+
+
   }
 
   public static void main(String[] args) {

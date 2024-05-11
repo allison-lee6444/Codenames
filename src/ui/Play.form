@@ -311,7 +311,7 @@
           <text value="Button"/>
         </properties>
       </component>
-      <component id="24025" class="javax.swing.JLabel">
+      <component id="24025" class="javax.swing.JLabel" binding="redRemain">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag top="0" left="0" bottom="30" right="0" weightx="0.0" weighty="0.0"/>
@@ -322,7 +322,7 @@
           <text value="Red: 9"/>
         </properties>
       </component>
-      <component id="17680" class="javax.swing.JLabel">
+      <component id="17680" class="javax.swing.JLabel" binding="blueRemain">
         <constraints>
           <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag top="0" left="0" bottom="30" right="0" weightx="0.0" weighty="0.0"/>
@@ -333,7 +333,7 @@
           <text value="Blue: 8"/>
         </properties>
       </component>
-      <component id="74fc2" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+      <component id="74fc2" class="javax.swing.JTextField" binding="hintField">
         <constraints>
           <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -342,7 +342,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="cb491" class="javax.swing.JLabel">
+      <component id="cb491" class="javax.swing.JLabel" binding="numLabel">
         <constraints>
           <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag top="30" left="20" bottom="0" right="10" weightx="0.0" weighty="0.0"/>
@@ -351,7 +351,7 @@
           <text value="# words:"/>
         </properties>
       </component>
-      <component id="ff3b5" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+      <component id="ff3b5" class="javax.swing.JTextField" binding="numField">
         <constraints>
           <grid row="6" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -369,13 +369,34 @@
           <text value="Submit"/>
         </properties>
       </component>
-      <component id="93eff" class="javax.swing.JLabel">
+      <component id="93eff" class="javax.swing.JLabel" binding="hintLabel">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag top="30" left="0" bottom="0" right="10" weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
           <text value="Give Hint:"/>
+        </properties>
+      </component>
+      <component id="3bea8" class="javax.swing.JLabel" binding="turnLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <font size="12"/>
+          <foreground color="-822419"/>
+          <text value="Red spymaster is giving hints"/>
+        </properties>
+      </component>
+      <component id="52cdc" class="javax.swing.JLabel" binding="hint">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag top="0" left="15" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <font size="20"/>
+          <text value="Current hint: waiting..."/>
         </properties>
       </component>
     </children>

@@ -102,6 +102,10 @@ public class PlayerList implements Serializable {
 
   private void writeObject(java.io.ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
+    out.writeInt(unassigned.size());
+    for (Player player : unassigned) {
+      out.writeObject(player);
+    }
     out.writeInt(redDetectives.size());
     for (Player player : redDetectives) {
       out.writeObject(player);
@@ -114,8 +118,14 @@ public class PlayerList implements Serializable {
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    redDetectives.clear();
+    unassigned.clear();
     int count = in.readInt();
+    for (int i = 0; i < count; i++) {
+      unassigned.add((Player) in.readObject());
+    }
+
+    redDetectives.clear();
+    count = in.readInt();
     for (int i = 0; i < count; i++) {
       redDetectives.add((Player) in.readObject());
     }

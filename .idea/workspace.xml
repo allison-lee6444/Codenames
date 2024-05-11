@@ -4,10 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e41666bd-786d-473c-8737-e31d5ddbf1ab" name="Changes" comment="6pm update">
+    <list default="true" id="e41666bd-786d-473c-8737-e31d5ddbf1ab" name="Changes" comment="waiting room completed">
+      <change afterPath="$PROJECT_DIR$/src/game/Board.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wordlist.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game/PlayerList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/PlayerList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/Play.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Play.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/Play.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Play.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +24,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="FxmlFile" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -36,17 +43,18 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Board.executor": "Debug",
     "Application.Client.executor": "Run",
     "Application.Game.executor": "Run",
     "Application.Server.executor": "Run",
     "Application.Start.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "UI_DESIGNER_EDITOR_MODE.PaletteManager.SHOW": "false",
+    "UI_DESIGNER_EDITOR_MODE.PaletteManager.SHOW": "true",
     "UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH": "107",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/shing6444/PycharmProjects/cs6613-project",
+    "last_opened_file_path": "/home/shing6444/IdeaProjects/Codenames",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -57,6 +65,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/ui" />
     </key>
@@ -122,7 +133,9 @@
       <workItem from="1715274734927" duration="20406000" />
       <workItem from="1715323713258" duration="4450000" />
       <workItem from="1715357786268" duration="10306000" />
-      <workItem from="1715370845335" duration="9801000" />
+      <workItem from="1715370845335" duration="13935000" />
+      <workItem from="1715385376239" duration="9712000" />
+      <workItem from="1715395280276" duration="988000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -156,40 +169,54 @@
       <option name="project" value="LOCAL" />
       <updated>1715379010456</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="waiting room completed">
+      <option name="closed" value="true" />
+      <created>1715380784620</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1715380784620</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="gui finished" />
     <MESSAGE value="6pm update" />
-    <option name="LAST_COMMIT_MESSAGE" value="6pm update" />
+    <MESSAGE value="waiting room completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="waiting room completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>154</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>94</line>
-          <option name="timeStamp" value="23" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Server.java</url>
-          <line>140</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">
           <properties class="java.lang.ClassCastException" package="java.lang" />
           <option name="timeStamp" value="25" />
         </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="45" />
+        </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ui/Client.java</url>
+          <line>189</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
