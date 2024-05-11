@@ -4,16 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e41666bd-786d-473c-8737-e31d5ddbf1ab" name="Changes" comment="waiting room completed">
-      <change afterPath="$PROJECT_DIR$/src/game/Board.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wordlist.txt" afterDir="false" />
+    <list default="true" id="e41666bd-786d-473c-8737-e31d5ddbf1ab" name="Changes" comment="core logic completed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/PlayerList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/PlayerList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Play.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Play.form" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/Play.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Play.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -135,7 +128,7 @@
       <workItem from="1715357786268" duration="10306000" />
       <workItem from="1715370845335" duration="13935000" />
       <workItem from="1715385376239" duration="9712000" />
-      <workItem from="1715395280276" duration="988000" />
+      <workItem from="1715395280276" duration="1839000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -177,7 +170,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715380784620</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="core logic completed">
+      <option name="closed" value="true" />
+      <created>1715396678508</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1715396678508</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -199,7 +200,8 @@
     <MESSAGE value="gui finished" />
     <MESSAGE value="6pm update" />
     <MESSAGE value="waiting room completed" />
-    <option name="LAST_COMMIT_MESSAGE" value="waiting room completed" />
+    <MESSAGE value="core logic completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="core logic completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

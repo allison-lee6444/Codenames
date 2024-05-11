@@ -87,7 +87,7 @@ public class Play {
     } else {
       isDetective = false;
       for (int i = 0; i < 25; i++) {
-        buttons[i].setContentAreaFilled(false);
+        buttons[i].setBackground(new Color(255, 255, 255));
       }
     }
 

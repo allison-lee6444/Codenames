@@ -201,12 +201,16 @@ public class Client extends JFrame implements Runnable {
         if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueHint) {
           return;
         }
-        if (hintField.getText().contains(" ")) {
+        if (hintField.getText().contains(" ") || hintField.getText().isEmpty()) {
           JOptionPane.showMessageDialog(null, "Hint needs to be in one word");
           return;
         }
         try {
-          Integer.parseInt(numField.getText());
+          int num = Integer.parseInt(numField.getText());
+          if (num<1){
+            JOptionPane.showMessageDialog(null, "Please make sure your number is larger than 1.");
+            return;
+          }
         } catch (NumberFormatException ex) {
           JOptionPane.showMessageDialog(null, "Please make sure your number is an integer.");
           return;
@@ -296,6 +300,8 @@ public class Client extends JFrame implements Runnable {
         int wordGuessed = ((Guess) move).getWordId();
         Board.WordType wordGuessedType = game.getBoard().getWordTypes()[wordGuessed];
         buttons[wordGuessed].setBackground(colorMap.get(wordGuessedType));
+        buttons[wordGuessed].setForeground(new Color(255, 255, 255));
+
         if (wordGuessedType == Board.WordType.RED) {
           redRemainCount--;
         } else if (wordGuessedType == Board.WordType.BLUE) {
