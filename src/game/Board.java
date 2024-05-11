@@ -63,6 +63,7 @@ public class Board implements Serializable {
     }
   }
 
+  // to allow sending over network
   private void writeObject(java.io.ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
     for (int i = 0; i < 25; i++) {

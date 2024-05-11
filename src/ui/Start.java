@@ -6,6 +6,7 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.Locale;
 
+// start screen
 public class Start {
   private JLabel title;
   private JTextField username;

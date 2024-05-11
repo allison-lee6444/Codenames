@@ -23,11 +23,12 @@ public class PlayerList implements Serializable {
     return joining;
   }
 
+  // allow or refuse player set role request
   public synchronized boolean setRole(Player player, Player.Team team, Player.Role role) {
     if (!joining) {
       return false;
     }
-    // unassign player first
+    // unassign player first. if this fails, the wrapper at Game will restore their role and team.
     if (player.isAssignedRole()) {
       if (player.getTeam() == Player.Team.RED) {
         if (player.getRole() == Player.Role.SPYMASTER) {
@@ -100,6 +101,7 @@ public class PlayerList implements Serializable {
     joining = false;
   }
 
+  // allow it to pass over the network
   private void writeObject(java.io.ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
     out.writeInt(unassigned.size());

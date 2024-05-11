@@ -9,6 +9,7 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.Locale;
 
+// waiting room page
 public class WaitingRoom {
   private JPanel waitingRoomPanel;
   private JPanel Red;
@@ -35,6 +36,7 @@ public class WaitingRoom {
     gameIdLabel.setText(String.format("%s%d", gameIdLabel.getText(), gameId));
   }
 
+  // allows update to player list and display the list accordingly
   public void setPlayerList(PlayerList playerList) {
     Player target = playerList.getBlueSpymaster();
     blueSpymaster.setText("Spymaster: " + (target == null ? "" : target.getUsername()));

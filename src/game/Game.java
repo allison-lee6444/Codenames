@@ -24,6 +24,7 @@ public class Game {
     this.id = id;
   }
 
+  // wrapper for PlayerList.setRole to ensure game id integrity
   public boolean pickRole(Player player, Team team, Role role) {
     if (player.getGameId() != id) {
       return false;
@@ -70,6 +71,7 @@ public class Game {
     moves.add(move);
   }
 
+  // start game
   public void start() {
     state = State.PLAYING;
     playerList.endJoining();
@@ -86,12 +88,13 @@ public class Game {
 
   public enum Phase {RedHint, RedGuess, BlueHint, BlueGuess, RedWin, BlueWin}
 
+  // determine phase of the game by analyzing the moves
   public Phase getPhase() {
     if (moves.isEmpty()) {
-      return Phase.RedHint;
+      return Phase.RedHint; // red starts first
     }
     Move lastMove = moves.get(moves.size() - 1);
-    if (lastMove.getPlayer().getRole() == Role.SPYMASTER) {
+    if (lastMove.getPlayer().getRole() == Role.SPYMASTER) { // guess must come after hint
       if (lastMove.getPlayer().getTeam() == Team.RED) {
         return Phase.RedGuess;
       } else {
@@ -101,7 +104,7 @@ public class Game {
       Guess lastGuess = (Guess) lastMove;
       Board.WordType lastGuessType = board.getWordTypes()[lastGuess.getWordId()];
       Team playerTeam = lastGuess.getPlayer().getTeam();
-      if (lastGuessType == Board.WordType.ASSASSIN) { // automatically ended
+      if (lastGuessType == Board.WordType.ASSASSIN) { // automatically loses
         if (playerTeam == Team.RED) {
           return Phase.BlueWin;
         } else {
@@ -110,7 +113,7 @@ public class Game {
       }
       boolean correctGuess = (lastGuessType == Board.WordType.RED && playerTeam == Team.RED) ||
               (lastGuessType == Board.WordType.BLUE && playerTeam == Team.BLUE);
-      if (correctGuess) {
+      if (correctGuess) { // continue only if guessed correctly
         if (playerTeam == Team.RED) {
           return Phase.RedGuess;
         } else {

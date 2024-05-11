@@ -5,8 +5,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import game.Game;
 import game.Move;
@@ -86,11 +84,10 @@ public class Server extends JFrame {
             if (game.getMoves().isEmpty()) {
               outputToClient.writeObject(game.getPlayerList());
               outputToClient.flush();
-              if (!game.getPlayerList().isJoining()){ // just started the game
+              if (!game.getPlayerList().isJoining()) { // just started the game
                 outputToClient.writeObject(game.getBoard());
               }
-            }
-            else
+            } else
               outputToClient.writeObject(game.getMoves());
             outputToClient.flush();
           }

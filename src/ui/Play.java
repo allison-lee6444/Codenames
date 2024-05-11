@@ -9,9 +9,8 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Stream;
 
+// play screen
 public class Play {
   private JPanel PlayPanel;
   private JButton button1;
@@ -64,6 +63,7 @@ public class Play {
     return PlayPanel;
   }
 
+  // initialize board for player depending on their role
   public void setBoard(Player player, Board board) {
     if (buttons == null) {
       buttons = new JButton[]{

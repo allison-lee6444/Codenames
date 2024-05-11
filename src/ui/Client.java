@@ -26,18 +26,130 @@ public class Client extends JFrame implements Runnable {
   private final WaitingRoom waitingRoom = new WaitingRoom();
   private final Play play = new Play();
 
-  public Client() {
-    super("Codenames ui.Client");
-    initializeUI();
+  // manage ui interactions in the waiting room
+  private class WaitingRoomInteractions {
+    private final JButton redSpymasterButton = waitingRoom.getSelectRedSpymaster();
+    private final JButton blueSpymasterButton = waitingRoom.getSelectBlueSpymaster();
+    private final JButton redDetectiveButton = waitingRoom.getSelectRedDetective();
+    private final JButton blueDetectiveButton = waitingRoom.getSelectBlueDetective();
+    private final JButton startGameButton = waitingRoom.getStartGameButton();
 
+    public WaitingRoomInteractions() {
+      redSpymasterButton.addActionListener((e) -> {
+        game.pickRole(me, Player.Team.RED, Player.Role.SPYMASTER);
+        writeToServer();
+      });
+      blueSpymasterButton.addActionListener((e) -> {
+        game.pickRole(me, Player.Team.BLUE, Player.Role.SPYMASTER);
+        writeToServer();
+      });
+      redDetectiveButton.addActionListener((e) -> {
+        game.pickRole(me, Player.Team.RED, Player.Role.DETECTIVE);
+        writeToServer();
+      });
+      blueDetectiveButton.addActionListener((e) -> {
+        game.pickRole(me, Player.Team.BLUE, Player.Role.DETECTIVE);
+        writeToServer();
+      });
+      startGameButton.addActionListener((e) -> {
+        game.start();
+        writeToServer();
+      });
+    }
+
+    public void writeToServer() {
+      try {
+        synchronized (game) {
+          ostream.writeObject(game.getPlayerList());
+          ostream.flush();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+    }
   }
 
+  // manage interactions when playing
+  private class PlayInteractions {
+    private JButton[] buttons = play.getButtons();
+    private JButton submitButton = play.getSubmitButton();
+    private JTextField hintField = play.getHintField();
+    private JTextField numField = play.getNumField();
+
+    public PlayInteractions() {
+      for (int i = 0; i < buttons.length; i++) {
+        int finalI = i;
+        buttons[i].addActionListener((e) -> {
+          if (me.getRole() == Player.Role.SPYMASTER) {
+            return;
+          }
+          if (me.getTeam() == Player.Team.RED && game.getPhase() != Game.Phase.RedGuess) {
+            return;
+          }
+          if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueGuess) {
+            return;
+          }
+          game.addMove(new Guess(me, finalI));
+          writeToServer();
+        });
+      }
+      submitButton.addActionListener((e) -> {
+        if (me.getRole() != Player.Role.SPYMASTER) {
+          return;
+        }
+        if (me.getTeam() == Player.Team.RED && game.getPhase() != Game.Phase.RedHint) {
+          return;
+        }
+        if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueHint) {
+          return;
+        }
+        if (hintField.getText().contains(" ") || hintField.getText().isEmpty()) {
+          JOptionPane.showMessageDialog(null, "Hint needs to be in one word");
+          return;
+        }
+        try {
+          int num = Integer.parseInt(numField.getText());
+          if (num < 1) {
+            JOptionPane.showMessageDialog(null, "Please make sure your number is larger than 1.");
+            return;
+          }
+        } catch (NumberFormatException ex) {
+          JOptionPane.showMessageDialog(null, "Please make sure your number is an integer.");
+          return;
+        }
+        game.addMove(new Hint(me, hintField.getText(), Integer.parseInt(numField.getText())));
+        writeToServer();
+        hintField.setText("");
+        numField.setText("");
+      });
+
+    }
+
+    public void writeToServer() {
+      try {
+        synchronized (game) {
+          ostream.writeObject(game.getMoves());
+          ostream.flush();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public Client() {
+    super("Codenames Client");
+    initializeUI();
+  }
+
+  // repeatedly read from server and update the ui
   public void run() {
     try {
       while (true) {
         if (game.getState() == Game.State.WAITING) {
           PlayerList newPlayerList = (PlayerList) istream.readObject();
-          if (!newPlayerList.isJoining()) { // switching to playing
+          if (!newPlayerList.isJoining()) { // switching to playing screen
             Board board = (Board) istream.readObject();
             remove(waitingRoom.getWaitingRoomPanel());
             add(play.getPlayPanel(), BorderLayout.CENTER);
@@ -50,8 +162,7 @@ public class Client extends JFrame implements Runnable {
           }
           game.setPlayerList(newPlayerList);
           waitingRoom.setPlayerList(newPlayerList);
-//          waitingRoom.getStartGameButton().setEnabled(newPlayerList.isReady());
-          waitingRoom.getStartGameButton().setEnabled(true);
+          waitingRoom.getStartGameButton().setEnabled(newPlayerList.isReady());
         } else {
           ArrayList<Move> moves = (ArrayList<Move>) istream.readObject();
           game.setMoves(moves);
@@ -64,6 +175,7 @@ public class Client extends JFrame implements Runnable {
     }
   }
 
+  // initialize ui and manages the start screen interactions
   private void initializeUI() {
     setSize(800, 550);
 
@@ -125,116 +237,8 @@ public class Client extends JFrame implements Runnable {
     });
   }
 
-  private class WaitingRoomInteractions {
-    private final JButton redSpymasterButton = waitingRoom.getSelectRedSpymaster();
-    private final JButton blueSpymasterButton = waitingRoom.getSelectBlueSpymaster();
-    private final JButton redDetectiveButton = waitingRoom.getSelectRedDetective();
-    private final JButton blueDetectiveButton = waitingRoom.getSelectBlueDetective();
-    private final JButton startGameButton = waitingRoom.getStartGameButton();
 
-    public WaitingRoomInteractions() {
-      redSpymasterButton.addActionListener((e) -> {
-        game.pickRole(me, Player.Team.RED, Player.Role.SPYMASTER);
-        writeToServer();
-      });
-      blueSpymasterButton.addActionListener((e) -> {
-        game.pickRole(me, Player.Team.BLUE, Player.Role.SPYMASTER);
-        writeToServer();
-      });
-      redDetectiveButton.addActionListener((e) -> {
-        game.pickRole(me, Player.Team.RED, Player.Role.DETECTIVE);
-        writeToServer();
-      });
-      blueDetectiveButton.addActionListener((e) -> {
-        game.pickRole(me, Player.Team.BLUE, Player.Role.DETECTIVE);
-        writeToServer();
-      });
-      startGameButton.addActionListener((e) -> {
-        game.start();
-        writeToServer();
-      });
-    }
-
-    public void writeToServer() {
-      try {
-        synchronized (game) {
-          ostream.writeObject(game.getPlayerList());
-          ostream.flush();
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-    }
-  }
-
-  private class PlayInteractions {
-    private JButton[] buttons = play.getButtons();
-    private JButton submitButton = play.getSubmitButton();
-    private JTextField hintField = play.getHintField();
-    private JTextField numField = play.getNumField();
-
-    public PlayInteractions() {
-      for (int i = 0; i < buttons.length; i++) {
-        int finalI = i;
-        buttons[i].addActionListener((e) -> {
-          if (me.getRole() == Player.Role.SPYMASTER) {
-            return;
-          }
-          if (me.getTeam() == Player.Team.RED && game.getPhase() != Game.Phase.RedGuess) {
-            return;
-          }
-          if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueGuess) {
-            return;
-          }
-          game.addMove(new Guess(me, finalI));
-          writeToServer();
-        });
-      }
-      submitButton.addActionListener((e) -> {
-        if (me.getRole() != Player.Role.SPYMASTER) {
-          return;
-        }
-        if (me.getTeam() == Player.Team.RED && game.getPhase() != Game.Phase.RedHint) {
-          return;
-        }
-        if (me.getTeam() == Player.Team.BLUE && game.getPhase() != Game.Phase.BlueHint) {
-          return;
-        }
-        if (hintField.getText().contains(" ") || hintField.getText().isEmpty()) {
-          JOptionPane.showMessageDialog(null, "Hint needs to be in one word");
-          return;
-        }
-        try {
-          int num = Integer.parseInt(numField.getText());
-          if (num<1){
-            JOptionPane.showMessageDialog(null, "Please make sure your number is larger than 1.");
-            return;
-          }
-        } catch (NumberFormatException ex) {
-          JOptionPane.showMessageDialog(null, "Please make sure your number is an integer.");
-          return;
-        }
-        game.addMove(new Hint(me, hintField.getText(), Integer.parseInt(numField.getText())));
-        writeToServer();
-        hintField.setText("");
-        numField.setText("");
-      });
-
-    }
-
-    public void writeToServer() {
-      try {
-        synchronized (game) {
-          ostream.writeObject(game.getMoves());
-          ostream.flush();
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
+  // connect to server
   public void connectServer(String username, String gameid) {
     try {
       socket = new Socket("localhost", 9898);
@@ -293,6 +297,7 @@ public class Client extends JFrame implements Runnable {
     int redRemainCount = 9;
     int blueRemainCount = 8;
 
+    // record end state
     for (Move move : moves) {
       if (move.getMoveType() == Move.MoveType.HINT) {
         lastHint = String.format("%s/%d", ((Hint) move).getWord(), ((Hint) move).getNumber());
@@ -307,13 +312,15 @@ public class Client extends JFrame implements Runnable {
         } else if (wordGuessedType == Board.WordType.BLUE) {
           blueRemainCount--;
         }
-
       }
     }
+
+    // set labels text according to end state
     if (moves.get(moves.size() - 1).getMoveType() == Move.MoveType.GUESS &&
             (game.getPhase() == Game.Phase.RedHint || game.getPhase() == Game.Phase.BlueHint)) {
       lastHint = "Waiting...";
     }
+
     hint.setText("Hint: " + lastHint);
     redRemain.setText("Red: " + redRemainCount);
     blueRemain.setText("Blue: " + blueRemainCount);
